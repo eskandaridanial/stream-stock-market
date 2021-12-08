@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-websocket="http://www.springframework.org/schema/integration/websocket"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/integration
+        https://www.springframework.org/schema/integration/spring-integration.xsd
+        http://www.springframework.org/schema/integration/websocket
+        https://www.springframework.org/schema/integration/websocket/spring-integration-websocket.xsd">
+
+    <bean id="webSocketClient" class="org.springframework.web.socket.client.standard.StandardWebSocketClient"/>
+
+    <int-websocket:client-container id="clientContainer"
+                                    client="webSocketClient"
+                                    uri="wss://stream.binance.com:9443/ws/bnbusdt@kline_1m"/>
+
+    <int-websocket:inbound-channel-adapter container="clientContainer"
+                                           channel="input"
+                                           payload-type="java.util.Map"/>
+
+    <int:chain input-channel="input" output-channel="kafkaInput">
+
+        <int:filter expression="payload.k.x == true"/>
+
+        <int:transformer id="marketDataTransformer" ref="marketDataTransformer" method="transform"/>
+
+    </int:chain>
+
+    <int:chain input-channel="kafkaInput" output-channel="nullChannel">
+
+        <int:transformer id="kafkaPublisherTransformer" ref="kafkaPublisherTransformer" method="transform"/>
+
+    </int:chain>
+
+</beans>
+
