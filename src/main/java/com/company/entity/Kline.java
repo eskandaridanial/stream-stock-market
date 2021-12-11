@@ -1,19 +1,29 @@
 package com.company.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class Kline {
 
-    private Long t;
-    private Long T;
-    private String s;
-    private String i;
-    private String o;
-    private String c;
-    private String h;
-    private String l;
-    private Boolean x;
+    @JsonProperty("t")
+    private Long klineStartTime;
+    @JsonProperty("T")
+    private Long klineCloseTime;
+    @JsonProperty("s")
+    private String symbol;
+    @JsonProperty("i")
+    private String interval;
+    @JsonProperty("o")
+    private String openPrice;
+    @JsonProperty("c")
+    private String closePrice;
+    @JsonProperty("h")
+    private String highPrice;
+    @JsonProperty("l")
+    private String lowPrice;
+    @JsonProperty("x")
+    private Boolean isClosed;
 
 }
 
